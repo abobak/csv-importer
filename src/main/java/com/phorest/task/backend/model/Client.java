@@ -6,10 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -34,4 +33,7 @@ public class Client {
     private Gender gender;
 
     private boolean banned = false;
+
+    @OneToMany(mappedBy = "clientId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments = new LinkedList<>();
 }
