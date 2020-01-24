@@ -1,33 +1,30 @@
 package com.phorest.task.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phorest.task.backend.model.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientDto {
+public class AppointmentDto {
 
     private UUID id;
 
-    @JsonProperty("first_name")
-    private String firstName;
+    @JsonProperty("client_id")
+    private UUID clientId;
 
-    @JsonProperty("last_name")
-    private String lastName;
+    @JsonProperty("start_time")
+    private String startTime;
 
-    private String email;
+    @JsonProperty("end_time")
+    private String endTime;
 
-    private String phone;
-
-    private Gender gender;
-
-    private boolean banned = false;
 }
