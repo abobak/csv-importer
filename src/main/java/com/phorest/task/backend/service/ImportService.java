@@ -3,6 +3,8 @@ package com.phorest.task.backend.service;
 
 import com.phorest.task.backend.dto.AppointmentDto;
 import com.phorest.task.backend.dto.ClientDto;
+import com.phorest.task.backend.dto.PurchaseDto;
+import com.phorest.task.backend.dto.ServiceDto;
 import com.phorest.task.backend.mapper.CsvToDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,11 @@ public class ImportService {
     }
 
     public void importServices(byte[] payload) throws IOException {
-
+        List<ServiceDto> dtos = mapper.csvToDtoList(payload, ServiceDto.class);
     }
 
     public void importPurchases(byte[] payload) throws IOException {
-
+        List<PurchaseDto> dtos = mapper.csvToDtoList(payload, PurchaseDto.class);
     }
 
 }
