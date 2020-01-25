@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,19 +19,29 @@ import java.util.UUID;
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
-    private UUID clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 
-    LocalDateTime startDate;
+    private ZonedDateTime startTime;
 
-    LocalDateTime endDate;
+    private ZonedDateTime endTime;
 
-    @OneToMany(mappedBy = "appointmentId", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Service> services = new LinkedList<>();
-
-    @OneToMany(mappedBy = "appointmentId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Purchase> purchases;
 
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Service> services;
+
+    public void addPurchase(Purchase p) {
+        purchases.add(p);
+        p.setAppointment(this);
+    }
+
+    public void addService(Service s) {
+        services.add(s);
+        s.setAppointment(this);
+    }
 }

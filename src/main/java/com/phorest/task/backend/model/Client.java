@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,8 +18,7 @@ import java.util.UUID;
 public class Client {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     private String firstName;
 
@@ -34,6 +32,11 @@ public class Client {
 
     private boolean banned = false;
 
-    @OneToMany(mappedBy = "clientId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Appointment> appointments = new LinkedList<>();
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private List<Appointment> appointments;
+
+    public void addAppointment(Appointment newAppointment) {
+        appointments.add(newAppointment);
+        newAppointment.setClient(this);
+    }
 }

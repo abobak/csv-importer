@@ -37,7 +37,7 @@ class ClientServiceTest {
     private String expectedLastName = "expected last name";
     private String expectedEmail = "expected@email";
     private String expectedPhone = "123";
-    private Gender expectedGender = Gender.FEMALE;
+    private Gender expectedGender = Gender.Female;
     private boolean banned = false;
 
     private ClientDto dto;
@@ -68,7 +68,7 @@ class ClientServiceTest {
         String expectedLastName = "changed last name";
         String expectedEmail = "changed@email";
         String expectedPhone = "123456";
-        Gender expectedGender = Gender.MALE;
+        Gender expectedGender = Gender.Male;
         Client c = clientRepository.save(clientMapper.dtoToClient(dto));
 
         // when
