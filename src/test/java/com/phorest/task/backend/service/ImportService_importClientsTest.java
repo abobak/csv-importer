@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-class ImportServiceTest {
+class ImportService_importClientsTest {
 
     @Autowired
     private ImportService importService;
