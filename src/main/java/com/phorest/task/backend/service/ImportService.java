@@ -5,16 +5,14 @@ import com.phorest.task.backend.dto.AppointmentDto;
 import com.phorest.task.backend.dto.ClientDto;
 import com.phorest.task.backend.dto.PurchaseDto;
 import com.phorest.task.backend.dto.ServiceDto;
-import com.phorest.task.backend.mapper.AppointmentMapper;
-import com.phorest.task.backend.mapper.ClientMapper;
-import com.phorest.task.backend.mapper.CsvToDtoMapper;
-import com.phorest.task.backend.mapper.PurchaseMapper;
+import com.phorest.task.backend.mapper.*;
 import com.phorest.task.backend.model.Appointment;
 import com.phorest.task.backend.model.Client;
 import com.phorest.task.backend.model.Purchase;
 import com.phorest.task.backend.repository.AppointmentRepository;
 import com.phorest.task.backend.repository.ClientRepository;
 import com.phorest.task.backend.repository.PurchaseRepository;
+import com.phorest.task.backend.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,11 +33,15 @@ public class ImportService {
 
     private final PurchaseMapper purchaseMapper;
 
+    private final ServiceMapper serviceMapper;
+
     private final ClientRepository clientRepository;
 
     private final AppointmentRepository appointmentRepository;
 
     private final PurchaseRepository purchaseRepository;
+
+    private final ServiceRepository serviceRepository;
 
     @Transactional
     public void importClients(byte[] payload) throws IOException {
@@ -99,6 +101,26 @@ public class ImportService {
 
     public void importServices(byte[] payload) throws IOException {
         List<ServiceDto> dtos = csvToDtoMapper.csvToDtoList(payload, ServiceDto.class);
+        Map<UUID, Appointment> appointmentsMap = getAppointmentsRelatedToServices(dtos);
+        List<com.phorest.task.backend.model.Service> servicesToImport = new LinkedList<>();
+        for (ServiceDto dto : dtos) {
+            Appointment a = appointmentsMap.get(dto.getAppointmentId());
+            com.phorest.task.backend.model.Service s = serviceMapper.dtoToService(dto, a);
+            a.addService(s);
+            servicesToImport.add(s);
+        }
+
+        appointmentRepository.saveAll(new ArrayList<>(appointmentsMap.values()));
+        serviceRepository.saveAll(servicesToImport);
+    }
+
+    private Map<UUID, Appointment> getAppointmentsRelatedToServices(List<ServiceDto> dtos) {
+        Set<UUID> appointmentIds = new HashSet<>();
+        for (ServiceDto dto : dtos) {
+            appointmentIds.add(dto.getAppointmentId());
+        }
+        List<Appointment> appointments = appointmentRepository.findAllById(appointmentIds);
+        return appointments.stream().collect(Collectors.toMap(Appointment::getId, c -> c, (a, b) -> b));
     }
 
 }

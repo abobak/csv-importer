@@ -16,4 +16,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             "where appointment.id = :id")
     Appointment getAppointmentWithPurchases(@Param("id") UUID id);
 
+    @Query("select appointment from Appointment appointment " +
+            "left join fetch appointment.services purchases " +
+            "where appointment.id = :id")
+    Appointment getAppointmentWithServices(@Param("id") UUID id);
+
 }
