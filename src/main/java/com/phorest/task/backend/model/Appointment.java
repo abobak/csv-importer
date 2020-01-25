@@ -34,4 +34,14 @@ public class Appointment {
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Service> services;
+
+    public void addPurchase(Purchase p) {
+        purchases.add(p);
+        p.setAppointment(this);
+    }
+
+    public void addService(Service s) {
+        services.add(s);
+        s.setAppointment(this);
+    }
 }

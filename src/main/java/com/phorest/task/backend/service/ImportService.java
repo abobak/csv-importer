@@ -8,10 +8,13 @@ import com.phorest.task.backend.dto.ServiceDto;
 import com.phorest.task.backend.mapper.AppointmentMapper;
 import com.phorest.task.backend.mapper.ClientMapper;
 import com.phorest.task.backend.mapper.CsvToDtoMapper;
+import com.phorest.task.backend.mapper.PurchaseMapper;
 import com.phorest.task.backend.model.Appointment;
 import com.phorest.task.backend.model.Client;
+import com.phorest.task.backend.model.Purchase;
 import com.phorest.task.backend.repository.AppointmentRepository;
 import com.phorest.task.backend.repository.ClientRepository;
+import com.phorest.task.backend.repository.PurchaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +33,13 @@ public class ImportService {
 
     private final AppointmentMapper appointmentMapper;
 
+    private final PurchaseMapper purchaseMapper;
+
     private final ClientRepository clientRepository;
 
     private final AppointmentRepository appointmentRepository;
+
+    private final PurchaseRepository purchaseRepository;
 
     @Transactional
     public void importClients(byte[] payload) throws IOException {
@@ -50,7 +57,7 @@ public class ImportService {
             Client c = clientsMap.get(dto.getClientId());
             Appointment appointment = appointmentMapper.dtoToAppointment(dto, c);
             appointmentsToImport.add(appointment);
-            c.getAppointments().add(appointment);
+            c.addAppointment(appointment);
         }
 
         clientRepository.saveAll(new ArrayList<>(clientsMap.values()));
@@ -66,12 +73,32 @@ public class ImportService {
         return clients.stream().collect(Collectors.toMap(Client::getId, c -> c, (a, b) -> b));
     }
 
-    public void importServices(byte[] payload) throws IOException {
-        List<ServiceDto> dtos = csvToDtoMapper.csvToDtoList(payload, ServiceDto.class);
-    }
-
     public void importPurchases(byte[] payload) throws IOException {
         List<PurchaseDto> dtos = csvToDtoMapper.csvToDtoList(payload, PurchaseDto.class);
+        Map<UUID, Appointment> appointmentsMap = getAppointmentsRelatedToPurchases(dtos);
+        List<Purchase> purchasesToImport = new LinkedList<>();
+        for (PurchaseDto dto : dtos) {
+            Appointment a = appointmentsMap.get(dto.getAppointmentId());
+            Purchase p = purchaseMapper.dtoToPurchase(dto, a);
+            a.addPurchase(p);
+            purchasesToImport.add(p);
+        }
+
+        appointmentRepository.saveAll(new ArrayList<>(appointmentsMap.values()));
+        purchaseRepository.saveAll(purchasesToImport);
+    }
+
+    private Map<UUID, Appointment> getAppointmentsRelatedToPurchases(List<PurchaseDto> dtos) {
+        Set<UUID> appointmentIds = new HashSet<>();
+        for (PurchaseDto dto : dtos) {
+            appointmentIds.add(dto.getAppointmentId());
+        }
+        List<Appointment> appointments = appointmentRepository.findAllById(appointmentIds);
+        return appointments.stream().collect(Collectors.toMap(Appointment::getId, c -> c, (a, b) -> b));
+    }
+
+    public void importServices(byte[] payload) throws IOException {
+        List<ServiceDto> dtos = csvToDtoMapper.csvToDtoList(payload, ServiceDto.class);
     }
 
 }

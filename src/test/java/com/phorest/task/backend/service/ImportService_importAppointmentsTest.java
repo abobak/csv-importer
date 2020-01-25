@@ -1,5 +1,6 @@
 package com.phorest.task.backend.service;
 
+import com.phorest.task.backend.model.Appointment;
 import com.phorest.task.backend.model.Client;
 import com.phorest.task.backend.repository.AppointmentRepository;
 import com.phorest.task.backend.repository.ClientRepository;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.phorest.task.backend.model.Gender.Female;
@@ -50,7 +52,12 @@ class ImportService_importAppointmentsTest {
         // when
         importService.importAppointments(csvPayload.getBytes());
         // then
-        assertEquals(3, appointmentRepository.findAll().size());
+        List<Appointment> expectedAppointments = appointmentRepository.findAllById(Lists.list(
+                UUID.fromString("67ce894a-9625-4ab7-8b91-17d83fb3fd10"),
+                UUID.fromString("a659bdd1-cd79-473a-aff4-a20c5760748d"),
+                UUID.fromString("5efa5a5d-d609-44bf-9190-a05c58b17196")
+        ));
+        assertEquals(3, expectedAppointments.size());
     }
 
     @Test
