@@ -14,7 +14,6 @@ import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.transaction.Transactional;
-
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;

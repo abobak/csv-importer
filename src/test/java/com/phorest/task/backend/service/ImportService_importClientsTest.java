@@ -1,6 +1,5 @@
 package com.phorest.task.backend.service;
 
-import com.phorest.task.backend.model.Client;
 import com.phorest.task.backend.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

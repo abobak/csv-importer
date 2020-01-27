@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface ServiceMapper {
 
     @Mapping(target = "id", source = "dto.id")
+    @Mapping(target = "appointment", source = "a")
     Service dtoToService(ServiceDto dto, Appointment a);
 
 }

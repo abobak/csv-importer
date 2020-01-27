@@ -11,6 +11,8 @@ import java.util.List;
 public interface ClientMapper {
 
     @Mapping(target = "id", expression = "java(java.util.Objects.isNull(dto.getId()) ? java.util.UUID.randomUUID() : dto.getId())")
+    @Mapping(target = "appointments", expression = "java(new java.util.ArrayList())")
+    @Mapping(target = "loyaltyPointsEntries", expression = "java(new java.util.ArrayList())")
     Client dtoToClient(ClientDto dto);
 
     ClientDto clientToDto(Client client);

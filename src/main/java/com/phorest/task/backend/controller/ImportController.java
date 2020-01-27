@@ -1,5 +1,6 @@
 package com.phorest.task.backend.controller;
 
+import com.phorest.task.backend.api.ImportApi;
 import com.phorest.task.backend.service.ImportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ImportController {
+public class ImportController implements ImportApi {
 
     private final ImportService importService;
 
