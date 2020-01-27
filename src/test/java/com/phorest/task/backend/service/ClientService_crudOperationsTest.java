@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-class ClientServiceTest {
+class ClientService_crudOperationsTest {
 
     @Autowired
     private ClientService clientService;
