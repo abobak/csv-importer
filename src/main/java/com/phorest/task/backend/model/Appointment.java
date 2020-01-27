@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -35,13 +34,17 @@ public class Appointment {
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Service> services;
 
-    public void addPurchase(Purchase p) {
+    public LoyaltyPointsEntry addPurchase(Purchase p) {
         purchases.add(p);
         p.setAppointment(this);
+        LoyaltyPointsEntry entry = new LoyaltyPointsEntry(p.getId(), null, this.getStartTime().toLocalDate(), p.getLoyaltyPoints());
+        return this.client.addLoyaltyPointsEntry(entry);
     }
 
-    public void addService(Service s) {
+    public LoyaltyPointsEntry addService(Service s) {
         services.add(s);
         s.setAppointment(this);
+        LoyaltyPointsEntry entry = new LoyaltyPointsEntry(s.getId(), null, this.getStartTime().toLocalDate(), s.getLoyaltyPoints());
+        return this.client.addLoyaltyPointsEntry(entry);
     }
 }

@@ -73,8 +73,8 @@ class ImportService_importAppointmentsTest {
 
 
     private void createTwoClients() {
-        Client c1 = new Client(UUID.fromString("e0b8ebfc-6e57-4661-9546-328c644a3764"), "Dori", "Dietrich", "patricia@keeling.net", "(272) 301-6356", Male, false, new LinkedList<>());
-        Client c2 = new Client(UUID.fromString("263f67fa-ce8f-447b-98cf-317656542216"), "Krystle", "Harvey", "romeorunolfon@corwin.co", "1-580-807-6075", Female, false, new LinkedList<>());
+        Client c1 = new Client(UUID.fromString("e0b8ebfc-6e57-4661-9546-328c644a3764"), "Dori", "Dietrich", "patricia@keeling.net", "(272) 301-6356", Male, false, new LinkedList<>(), new LinkedList<>());
+        Client c2 = new Client(UUID.fromString("263f67fa-ce8f-447b-98cf-317656542216"), "Krystle", "Harvey", "romeorunolfon@corwin.co", "1-580-807-6075", Female, false, new LinkedList<>(), new LinkedList<>());
         clientRepository.saveAll(Lists.newArrayList(c1, c2));
     }
 }

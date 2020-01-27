@@ -1,12 +1,17 @@
 package com.phorest.task.backend.service;
 
 import com.phorest.task.backend.dto.ClientDto;
+import com.phorest.task.backend.dto.ClientWithLoyaltyPointsDto;
 import com.phorest.task.backend.mapper.ClientMapper;
 import com.phorest.task.backend.model.Client;
 import com.phorest.task.backend.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,5 +63,9 @@ public class ClientService {
 
     public List<ClientDto> getClients() {
         return clientMapper.clientListToDtoList(clientRepository.findAll());
+    }
+
+    public List<ClientWithLoyaltyPointsDto> getBestClients(Integer howMany, LocalDate since) {
+        return clientRepository.getBestClients(since, PageRequest.of(0, howMany));
     }
 }

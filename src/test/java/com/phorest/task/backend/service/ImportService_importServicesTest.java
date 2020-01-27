@@ -1,9 +1,6 @@
 package com.phorest.task.backend.service;
 
-import com.phorest.task.backend.model.Appointment;
-import com.phorest.task.backend.model.Client;
-import com.phorest.task.backend.model.Purchase;
-import com.phorest.task.backend.model.Service;
+import com.phorest.task.backend.model.*;
 import com.phorest.task.backend.repository.AppointmentRepository;
 import com.phorest.task.backend.repository.ClientRepository;
 import com.phorest.task.backend.repository.PurchaseRepository;
@@ -26,6 +23,7 @@ import java.util.UUID;
 
 import static com.phorest.task.backend.model.Gender.Male;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -48,9 +46,13 @@ class ImportService_importServicesTest {
 
     private UUID appointmentId;
 
+    private Integer loyaltyPointsInImportPayload = 100;
+
     private String csvPayload = "id,appointment_id,name,price,loyalty_points\n" +
             "f1fc7009-0c44-4f89-ac98-5de9ce58095c,7416ebc3-12ce-4000-87fb-82973722ebf4,Full Head Colour,85.0,80\n" +
             "4c6b7ed3-910a-43c0-a1b6-27e835907e30,7416ebc3-12ce-4000-87fb-82973722ebf4,Scalp Massage,21.0,20";
+
+    private UUID clientId;
 
     @BeforeEach
     void setUp() {
@@ -58,12 +60,13 @@ class ImportService_importServicesTest {
     }
 
     private void createClientAndAppointment() {
-        Client c = new Client(UUID.fromString("e0b8ebfc-6e57-4661-9546-328c644a3764"), "Dori", "Dietrich", "patricia@keeling.net", "(272) 301-6356", Male, false, new LinkedList<>());
+        Client c = new Client(UUID.fromString("e0b8ebfc-6e57-4661-9546-328c644a3764"), "Dori", "Dietrich", "patricia@keeling.net", "(272) 301-6356", Male, false, new LinkedList<>(), new LinkedList<>());
         Appointment a = new Appointment(UUID.fromString("7416ebc3-12ce-4000-87fb-82973722ebf4"), null, ZonedDateTime.parse("2017-08-04 17:15:00 +0100", df), ZonedDateTime.parse("2017-08-04 18:15:00 +0100", df), new LinkedList<>(), new LinkedList<>());
         c.addAppointment(a);
         clientRepository.save(c);
         appointmentRepository.save(a);
         appointmentId = a.getId();
+        clientId = c.getId();
     }
 
     @Test
@@ -84,6 +87,16 @@ class ImportService_importServicesTest {
         // then
         Appointment ap = appointmentRepository.getAppointmentWithServices(appointmentId);
         assertEquals(2, ap.getServices().size());
+    }
+
+    @Test
+    void whenServicesAreImportedUserShouldBeGrantedLoyaltyPoints() throws IOException {
+        // when
+        importService.importServices(csvPayload.getBytes());
+        // then
+        Client c = clientRepository.getClientWithLoyaltyPointEntries(clientId);
+        Integer grantedLoyaltyPoints = c.getLoyaltyPointsEntries().stream().mapToInt(LoyaltyPointsEntry::getLoyaltyPoints).sum();
+        assertEquals(loyaltyPointsInImportPayload, grantedLoyaltyPoints);
     }
 
 }

@@ -8,11 +8,9 @@ import com.phorest.task.backend.dto.ServiceDto;
 import com.phorest.task.backend.mapper.*;
 import com.phorest.task.backend.model.Appointment;
 import com.phorest.task.backend.model.Client;
+import com.phorest.task.backend.model.LoyaltyPointsEntry;
 import com.phorest.task.backend.model.Purchase;
-import com.phorest.task.backend.repository.AppointmentRepository;
-import com.phorest.task.backend.repository.ClientRepository;
-import com.phorest.task.backend.repository.PurchaseRepository;
-import com.phorest.task.backend.repository.ServiceRepository;
+import com.phorest.task.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +40,8 @@ public class ImportService {
     private final PurchaseRepository purchaseRepository;
 
     private final ServiceRepository serviceRepository;
+
+    private final LoyaltyPointsEntryRepository loyaltyPointsEntryRepository;
 
     @Transactional
     public void importClients(byte[] payload) throws IOException {
@@ -79,15 +79,20 @@ public class ImportService {
         List<PurchaseDto> dtos = csvToDtoMapper.csvToDtoList(payload, PurchaseDto.class);
         Map<UUID, Appointment> appointmentsMap = getAppointmentsRelatedToPurchases(dtos);
         List<Purchase> purchasesToImport = new LinkedList<>();
+        List<LoyaltyPointsEntry> newLoyaltyPointEntries = new LinkedList<>();
         for (PurchaseDto dto : dtos) {
             Appointment a = appointmentsMap.get(dto.getAppointmentId());
             Purchase p = purchaseMapper.dtoToPurchase(dto, a);
-            a.addPurchase(p);
+            LoyaltyPointsEntry entry = a.addPurchase(p);
+            newLoyaltyPointEntries.add(entry);
             purchasesToImport.add(p);
         }
-
-        appointmentRepository.saveAll(new ArrayList<>(appointmentsMap.values()));
+        List<Appointment> appointmentsToSave = new ArrayList<>(appointmentsMap.values());
+        List<Client> clientsToSave = appointmentsToSave.stream().map(Appointment::getClient).collect(Collectors.toList());
+        appointmentRepository.saveAll(appointmentsToSave);
         purchaseRepository.saveAll(purchasesToImport);
+        clientRepository.saveAll(clientsToSave);
+        loyaltyPointsEntryRepository.saveAll(newLoyaltyPointEntries);
     }
 
     private Map<UUID, Appointment> getAppointmentsRelatedToPurchases(List<PurchaseDto> dtos) {
@@ -95,7 +100,7 @@ public class ImportService {
         for (PurchaseDto dto : dtos) {
             appointmentIds.add(dto.getAppointmentId());
         }
-        List<Appointment> appointments = appointmentRepository.findAllById(appointmentIds);
+        List<Appointment> appointments = appointmentRepository.getAllByIdWithClient(appointmentIds);
         return appointments.stream().collect(Collectors.toMap(Appointment::getId, c -> c, (a, b) -> b));
     }
 
@@ -103,15 +108,20 @@ public class ImportService {
         List<ServiceDto> dtos = csvToDtoMapper.csvToDtoList(payload, ServiceDto.class);
         Map<UUID, Appointment> appointmentsMap = getAppointmentsRelatedToServices(dtos);
         List<com.phorest.task.backend.model.Service> servicesToImport = new LinkedList<>();
+        List<LoyaltyPointsEntry> newLoyaltyPointEntries = new LinkedList<>();
         for (ServiceDto dto : dtos) {
             Appointment a = appointmentsMap.get(dto.getAppointmentId());
             com.phorest.task.backend.model.Service s = serviceMapper.dtoToService(dto, a);
-            a.addService(s);
+            LoyaltyPointsEntry entry = a.addService(s);
+            newLoyaltyPointEntries.add(entry);
             servicesToImport.add(s);
         }
-
-        appointmentRepository.saveAll(new ArrayList<>(appointmentsMap.values()));
+        List<Appointment> appointmentsToSave = new ArrayList<>(appointmentsMap.values());
+        List<Client> clientsToSave = appointmentsToSave.stream().map(Appointment::getClient).collect(Collectors.toList());
+        appointmentRepository.saveAll(appointmentsToSave);
         serviceRepository.saveAll(servicesToImport);
+        clientRepository.saveAll(clientsToSave);
+        loyaltyPointsEntryRepository.saveAll(newLoyaltyPointEntries);
     }
 
     private Map<UUID, Appointment> getAppointmentsRelatedToServices(List<ServiceDto> dtos) {
@@ -119,7 +129,7 @@ public class ImportService {
         for (ServiceDto dto : dtos) {
             appointmentIds.add(dto.getAppointmentId());
         }
-        List<Appointment> appointments = appointmentRepository.findAllById(appointmentIds);
+        List<Appointment> appointments = appointmentRepository.getAllByIdWithClient(appointmentIds);
         return appointments.stream().collect(Collectors.toMap(Appointment::getId, c -> c, (a, b) -> b));
     }
 
