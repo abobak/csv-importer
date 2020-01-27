@@ -1,9 +1,11 @@
 package com.phorest.task.backend.service;
 
-import com.phorest.task.backend.model.*;
+import com.phorest.task.backend.model.Appointment;
+import com.phorest.task.backend.model.Client;
+import com.phorest.task.backend.model.LoyaltyPointsEntry;
+import com.phorest.task.backend.model.Service;
 import com.phorest.task.backend.repository.AppointmentRepository;
 import com.phorest.task.backend.repository.ClientRepository;
-import com.phorest.task.backend.repository.PurchaseRepository;
 import com.phorest.task.backend.repository.ServiceRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +25,6 @@ import java.util.UUID;
 
 import static com.phorest.task.backend.model.Gender.Male;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

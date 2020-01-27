@@ -1,5 +1,6 @@
 package com.phorest.task.backend.controller;
 
+import com.phorest.task.backend.api.ClientApi;
 import com.phorest.task.backend.dto.ClientDto;
 import com.phorest.task.backend.dto.ClientWithLoyaltyPointsDto;
 import com.phorest.task.backend.exception.InvalidInputException;
@@ -9,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class ClientController {
+public class ClientController implements ClientApi {
 
     private final ClientService clientService;
 
@@ -51,15 +50,15 @@ public class ClientController {
         clientService.deleteClient(clientId);
     }
 
-    @GetMapping(path = "/api/v1/clients/top/{howMany}/since/{sinceDate}")
+    @GetMapping(path = "/api/v1/clients/top/{howMany}/since/{sinceWhen}")
     public List<ClientWithLoyaltyPointsDto> getTopClientsSinceDate(@PathVariable Integer howMany,
-                                                                   @PathVariable String date) {
+                                                                   @PathVariable String sinceWhen) {
         if (howMany < 1) {
             throw new InvalidInputException("Should request for at least one client");
         }
         LocalDate since;
         try {
-            since = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            since = LocalDate.parse(sinceWhen, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         } catch (DateTimeParseException ex) {
             throw new InvalidInputException("Date should be passed in yyyy-MM-dd format");
         }

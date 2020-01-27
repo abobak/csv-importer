@@ -23,10 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.phorest.task.backend.model.Gender.Female;
 import static com.phorest.task.backend.model.Gender.Male;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

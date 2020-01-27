@@ -18,6 +18,7 @@ public interface AppointmentMapper {
     @Mapping(target = "id", source = "dto.id")
     @Mapping(target = "startTime", source = "dto.startTime", dateFormat = "yyyy-MM-dd HH:mm:ss Z")
     @Mapping(target = "endTime", source = "dto.endTime", dateFormat = "yyyy-MM-dd HH:mm:ss Z")
+    @Mapping(target = "client", source = "c")
     Appointment dtoToAppointment(AppointmentDto dto, Client c);
 
 }
