@@ -8,11 +8,11 @@
 		<version>2.2.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.phorest.task</groupId>
+	<groupId>com.csv.task</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>backend</name>
-	<description>Backend API for Phorest</description>
+	<description>Backend API for csv import</description>
 
 	<properties>
 		<java.version>11</java.version>
